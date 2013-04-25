@@ -1,0 +1,72 @@
+本文主要适用于完全的纯新手。
+
+简单理解 Git 的思想和基本的工作原理，能够更好的进一步和使用Git。在开始学习Git 的时候，最好不要把Git的各种概念和其他的版本控制系统诸如 Subversion 等相比，否则容易混淆每个操作的实际意义。
+
+Git是一个免费的、分布式的版本控制工具，或是一个强调了速度快的源代码管理工具。每一个Git的工作目录都是一个完全独立的代码库，并拥有完整的历史记录和版本追踪能力，不依赖于网络和中心服务器。
+
+Git 在管理项目时，在本地会有三个工作区域：Git 的本地数据目录，工作目录以及暂存区域。
+
+因此对于任何一个文件，在 Git 内都只有三种状态：已提交（committed），已修改（modified）和已暂存（staged）。
+
+在简单地了解了Git之后，那么接下来的事情就是安装Git客户端了，命令如下：
+
+sudo apt-get install git
+
+
+首先需要到https://github.com/ 注册一个账户：只要点击导航条中的“Signup and Pricing”，或者点击首页中那个大大的“Plans, Pricing and Signup”按钮，即进入收费方案介绍及注册页面。开源软件托管是GitHub的基石，对于开源项目的版本库（即非私有版本库）的托管，GitHub是免费的。在收费方案及注册页面中，最上面的就是针对于开源的免费托管方案，如下图所示。
+
+
+
+点击上图右侧的“Create a free account”按钮，就进入到注册页面，如下图所示。
+
+
+
+注册只需要用户名，邮件地址和密码需要输入。注意：每个邮件地址只能注册一次。注册完成之后就会以新注册的账号自动登录。如下图所示：
+
+
+
+点击上图右上角的设置按钮，就能进入设置页面，我们主要关注的是“ setting up Git and SSH keys”，设置成功之后用户可以用公钥认证的方式连接到GitHub的SSH服务器。
+
+我们首先使用ssh命令连接github.com的SSH服务，登录用户名为git（所有GitHub用户共享此SSH用户名，不要写成其他）。
+
+ssh -T git@github.com
+执行之后提示：Permission denied (publickey).
+这说明我们还没在GitHub账户中正确设置公钥认证。下图为GitHub的SSH公钥设置界面:
+
+
+
+GitHub的SSH服务支持OpenSSH格式的公钥认证，可以通过Ubuntu下的ssh-keygen命令创建公钥/私钥对。
+
+ssh-keygen -C "yourname@yourcompany.com" -f ~/.ssh/github
+也可以用ssh-keygen命令以不同的名称创建多个公钥，当拥有多个GitHub账号时，非常重要。这是因为虽然一个GitHub账号允许使用多个不同的SSH公钥，但反过来，一个SSH公钥只能对应于一个GitHub账号。
+
+接下来就将~/.ssh/github.pub文件内容拷贝到剪切板。公钥是一行长长的字符串，若用编辑器打开公钥文件会折行显示，注意在copy时一定不要在其中插入多余的换行符、空格等，否则在公钥认证过程因为服务器端和客户端公钥不匹配而导致认证失败。然后将公钥文件中的内容粘贴到GitHub的SSH公钥管理的对话框，即上图key对话框中，并为这个SSH Key起个名字并保存。设置成功后，再用ssh命令访问GitHub，会显示一条认证成功信息并退出。在认证成功的信息中还会显示该公钥对应的用户名。
+
+ssh -T git@github.com
+执行后提示：Hi github! You've successfully authenticated, but GitHub does not provide shell access.
+通过以上的设置之后，我们就能够通过SSH的方式，直接使用Git命令访问GitHub托管服务器了。那么，下面我们就开始使用Git进行版本控制：
+
+1. 从服务器下载代码，准确的说应该是从GitHub服务器复制一个版本库到本地：
+
+mkdir git
+mkdir repos
+cd git/repos
+git clone git@github.com:"account context"/"repos name".git
+2. 获取到源码之后，就可以进行开发了，代码开发完成就可以提交代码：
+
+git add .    //往暂存区域添加已添加和修改的文件，不处理删除的文件
+git status   //比较本地数据目录与暂存区域的变化
+git commit -m "commit directions" //提到代码到本地数据目录，并添加提交说明
+3. 有可能你和其他人改的是同一个文件，那么冲突的情况是在所难免的，那么在提交之后再获取一下代码，就会提示代码冲突的文件，我们需要做的就是处理这些冲突，并再次提交：
+
+git pull     //更新代码
+根据提示修改冲突文件中的代码
+git add .
+git commit -m "commit directions"
+4. 当你做完以上的步骤的时候，你需要做的是把本地数据目录的版本库的数据同步到GitHub服务器上去，这样你的同事才能够看到你作出的修改：
+
+git push
+注意：""中的内容需要读者根据自己实际情况书写合适的内容。
+
+参考资料：
+http://www.cnblogs.com/kevinwu/archive/2012/06/03/2529167.html
